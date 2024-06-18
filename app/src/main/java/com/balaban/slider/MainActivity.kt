@@ -148,19 +148,19 @@ fun MainScreen(
     val sliderList by remember {
         mutableStateOf(
             listOf(
-                SliderItem(imageUrl = "https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"),
-                SliderItem("https://cdn.pixabay.com/photo/2016/12/12/13/10/lake-louise-1901556_1280.jpg"),
-                SliderItem("https://cdn.pixabay.com/photo/2024/05/23/13/23/moorente-8783210_1280.jpg"),
-                SliderItem("https://cdn.pixabay.com/photo/2019/04/26/12/29/blue-4157419_1280.jpg"),
-                SliderItem("https://cdn.pixabay.com/photo/2019/10/14/03/26/landscape-4547734_1280.jpg"),
-                SliderItem("https://cdn.pixabay.com/photo/2023/11/12/18/29/red-berries-8383886_1280.jpg"),
-                SliderItem("https://cdn.pixabay.com/photo/2020/08/22/17/51/boat-5509027_1280.jpg"),
+                SliderItem(imageUrl = "https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg", imageName = "Birds"),
+                SliderItem(imageUrl = "https://cdn.pixabay.com/photo/2016/12/12/13/10/lake-louise-1901556_1280.jpg", imageName = "Lake louise"),
+                SliderItem(imageUrl = "https://cdn.pixabay.com/photo/2024/05/23/13/23/moorente-8783210_1280.jpg", imageName = "moorente"),
+                SliderItem(imageUrl = "https://cdn.pixabay.com/photo/2019/04/26/12/29/blue-4157419_1280.jpg", imageName = "forest"),
+                SliderItem(imageUrl = "https://cdn.pixabay.com/photo/2019/10/14/03/26/landscape-4547734_1280.jpg", imageName = "landscape"),
+                SliderItem(imageUrl = "https://cdn.pixabay.com/photo/2023/11/12/18/29/red-berries-8383886_1280.jpg",imageName =  "red berries"),
+                SliderItem(imageUrl = "https://cdn.pixabay.com/photo/2020/08/22/17/51/boat-5509027_1280.jpg", imageName = "boat"),
             )
         )
     }
 
     val pagerState = rememberPagerState(
-        initialPage = 1,
+        initialPage = 3,
         initialPageOffsetFraction = 0f,
         pageCount = { sliderList.size }
     )
@@ -175,10 +175,10 @@ fun MainScreen(
     ) {
         HorizontalPager(
             modifier = Modifier
-                .fillMaxHeight(0.4f),
+                .fillMaxHeight(0.5f),
             state = pagerState,
             flingBehavior = fling,
-            contentPadding = PaddingValues(horizontal = 32.dp)
+            contentPadding = PaddingValues(horizontal = 24.dp)
         ) { pageIndex ->
             Card(
                 Modifier
@@ -194,16 +194,18 @@ fun MainScreen(
 
                         // We animate the alpha, between 50% and 100%
                         alpha = lerpAlpha(
-                            start = 0.4f,
+                            start = 0.5f,
                             stop = 1f,
                             fraction = 1f - pageOffset.coerceIn(0f, 1f)
                         )
+
 
                         scaleY = lerpSize(
                             start = 0.80f,
                             stop = 1f,
                             fraction = 1f - pageOffset.coerceIn(0f, 1f)
                         )
+
                     }
             ) {
 
@@ -213,31 +215,30 @@ fun MainScreen(
                     animatedContentScope = animatedContentScope
                 )
             }
-
-            Row(
-                Modifier
-                    .padding(top = 12.dp)
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                repeat(pagerState.pageCount) { iteration ->
-                    val color =
-                        if (pagerState.currentPage == iteration) Color.Red else Color.LightGray
-                    Box(
-                        modifier = Modifier
-                            .clickable {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(iteration)
-                                }
+        }
+        Row(
+            Modifier
+                .padding(top = 12.dp)
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(pagerState.pageCount) { iteration ->
+                val color =
+                    if (pagerState.currentPage == iteration) Color.Red else Color.LightGray
+                Box(
+                    modifier = Modifier
+                        .clickable {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(iteration)
                             }
-                            .padding(2.dp)
-                            .clip(CircleShape)
-                            .background(color)
-                            .size(16.dp)
-                    )
-                }
+                        }
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .size(16.dp)
+                )
             }
         }
     }
@@ -253,6 +254,12 @@ fun SliderItem(
     animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier
 ) {
+
+    val text by remember {
+        mutableStateOf(("Günbatımında Huzurun Rengi\n" +
+                "\n" +
+                "Bu nefes kesen günbatımı manzarası, doğanın büyüleyici gücünü ve huzur veren atmosferini yansıtıyor. Sonsuz gökyüzü ve sakin deniz, günün son ışıklarıyla birleşerek unutulmaz bir an yaratıyor. Doğanın bu büyüsü karşısında kendimi çok şanslı hissediyorum. \uD83C\uDF05✨"))
+    }
     with(sharedTransitionScope) {
         Box(
             modifier = modifier
@@ -271,28 +278,55 @@ fun SliderItem(
                 contentScale = ContentScale.FillBounds
             )
 
-            Box(
-                contentAlignment = Alignment.BottomCenter
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(32.dp)
-                        .alpha(0.5f)
-                        .background(Color.White)
-                )
+                Box(modifier = modifier
+                    .sharedElement(
+                        rememberSharedContentState(key = "title" + "-" + sliderItem.imageUrl),
+                        animatedVisibilityScope = animatedContentScope,
+                    ),
+                    contentAlignment = Alignment.TopCenter){
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(32.dp)
+                            .alpha(0.5f)
+                            .background(color = Color(0xFFB5CCFA))
+                    )
 
-                Text(
-                    modifier = Modifier
-                        .padding(top = 24.dp)
-                        .sharedElement(
-                            rememberSharedContentState(key = "title" + "-" + sliderItem.imageUrl),
-                            animatedVisibilityScope = animatedContentScope,
-                        ),
-                    text = "Photo Title",
-                    fontSize = 24.sp,
-                    color = Color.Black
-                )
+                    Text(
+                        text = sliderItem.imageName.toString(),
+                        fontSize = 24.sp,
+                        color = Color.Black
+                    )
+                }
+
+                Box(modifier = modifier
+                    .sharedElement(
+                        rememberSharedContentState(key = "subTitle" + "-" + sliderItem.imageUrl),
+                        animatedVisibilityScope = animatedContentScope,
+                    ),
+                    contentAlignment = Alignment.BottomCenter){
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(80.dp)
+                            .alpha(0.5f)
+                            .background(color = Color(0xFF3E3F41))
+                    )
+
+                    Text(
+                        modifier = Modifier.padding(horizontal = 6.dp),
+                        text = text,
+                        fontSize = 10.sp,
+                        color = Color.White,
+                        lineHeight = 12.sp
+                    )
+                }
+
             }
 
         }
@@ -319,52 +353,75 @@ private fun ImageDetail(
         Column(
             modifier = Modifier
                 .wrapContentSize()
-                .padding(start = 12.dp, end = 12.dp, top = 12.dp)
         ) {
-            Image(
-                modifier = modifier
-                    .clickable {
-                        onBackClicked.invoke()
-                    }
-                ,
-                painter = painterResource(id = R.drawable.go_back), contentDescription = "go back"
-            )
+            Row(modifier = modifier
+                .fillMaxWidth()
+                .background(color = Color(0xFFB5CCFA))
+                .padding(vertical = 12.dp)) {
+
+                Image(
+                    modifier = modifier
+                        .clickable {
+                            onBackClicked.invoke()
+                        }
+                        .padding(start = 12.dp),
+                    painter = painterResource(id = R.drawable.go_back), contentDescription = "go back"
+                )
+            }
 
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column( modifier =
-                Modifier
-                    .padding(top = 8.dp)
-                    .sharedElement(
-                        sharedTransitionScope.rememberSharedContentState(key = "title" + "-" + sliderItem.imageUrl),
-                        animatedVisibilityScope = animatedContentScope,
-                    )
+
+                Box(
+                    modifier = Modifier
+                        .sharedElement(
+                            rememberSharedContentState(key = "title" + "-" + sliderItem.imageUrl),
+                            animatedVisibilityScope = animatedContentScope,
+                        ),
+                    contentAlignment = Alignment.BottomCenter
                 ) {
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(32.dp)
+                            .alpha(0.5f)
+                            .background(color = Color(0xFFB5CCFA))
+                    )
+
                     Text(
-                        text = "Photo Title", fontSize = 24.sp
+                        text = sliderItem.imageName.toString(),
+                        fontSize = 24.sp,
+                        color = Color.Black
                     )
                 }
 
-                AsyncImage(
-                    modifier = Modifier
-                        .sharedElement(
-                            rememberSharedContentState(key = "image" + "-" + sliderItem.imageUrl),
-                            animatedVisibilityScope = animatedContentScope,
-                        ),
-                    model = sliderItem.imageUrl,
-                    contentDescription = "Translated description of what the image contains",
-                    contentScale = ContentScale.FillBounds
-                )
+                Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .sharedElement(
+                                rememberSharedContentState(key = "image" + "-" + sliderItem.imageUrl),
+                                animatedVisibilityScope = animatedContentScope,
+                            ),
+                        model = sliderItem.imageUrl,
+                        contentDescription = "Translated description of what the image contains",
+                        contentScale = ContentScale.FillBounds
+                    )
 
-                Text(
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .verticalScroll(rememberScrollState()),
-                    text = text,
-                    fontSize = 14.sp
-                )
+                    Text(
+                        modifier = Modifier
+                            .sharedElement(
+                                rememberSharedContentState(key = "subTitle" + "-" + sliderItem.imageUrl),
+                                animatedVisibilityScope = animatedContentScope,
+                            )
+                            .padding(top = 12.dp, start = 12.dp, end = 12.dp),
+                        text = text,
+                        fontSize = 14.sp
+                    )
+                }
+
+
             }
         }
     }
