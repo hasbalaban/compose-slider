@@ -1,8 +1,6 @@
 package com.balaban.slider.ui.sliderdetail
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -125,10 +123,7 @@ fun ImageDetail(
                         fontSize = 14.sp
                     )
                 }
-
-
             }
         }
     }
-
 }
