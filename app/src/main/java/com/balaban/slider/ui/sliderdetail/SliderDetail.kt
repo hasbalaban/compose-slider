@@ -56,7 +56,7 @@ fun ImageDetail(
 
     with(sharedTransitionScope){
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .wrapContentSize()
         ) {
             Row(modifier = modifier
@@ -80,7 +80,7 @@ fun ImageDetail(
             ) {
 
                 Box(
-                    modifier = Modifier
+                    modifier = modifier
                         .sharedElement(
                             rememberSharedContentState(key = "title" + "-" + sliderItem.imageUrl),
                             animatedVisibilityScope = animatedContentScope,
@@ -88,7 +88,7 @@ fun ImageDetail(
                     contentAlignment = Alignment.BottomCenter
                 ) {
                     Spacer(
-                        modifier = Modifier
+                        modifier = modifier
                             .fillMaxWidth()
                             .height(32.dp)
                             .alpha(0.5f)
@@ -104,7 +104,7 @@ fun ImageDetail(
 
                 Column(modifier = modifier.verticalScroll(rememberScrollState())) {
                     AsyncImage(
-                        modifier = Modifier
+                        modifier = modifier
                             .sharedElement(
                                 rememberSharedContentState(key = "image" + "-" + sliderItem.imageUrl),
                                 animatedVisibilityScope = animatedContentScope,
@@ -115,7 +115,7 @@ fun ImageDetail(
                     )
 
                     Text(
-                        modifier = Modifier
+                        modifier = modifier
                             .sharedElement(
                                 rememberSharedContentState(key = "subTitle" + "-" + sliderItem.imageUrl),
                                 animatedVisibilityScope = animatedContentScope,

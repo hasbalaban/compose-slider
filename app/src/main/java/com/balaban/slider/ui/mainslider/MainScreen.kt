@@ -77,17 +77,16 @@ fun MainScreen(
     )
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     ) {
         HorizontalPager(
-            modifier = Modifier
-                .fillMaxHeight(0.5f),
+            modifier = modifier.fillMaxHeight(0.5f),
             state = pagerState,
             flingBehavior = fling,
             contentPadding = PaddingValues(horizontal = 24.dp)
         ) { pageIndex ->
             Card(
-                Modifier
+                modifier
                     .clickable {
                         onClickedSliderDetail.invoke(sliderList[pageIndex])
                     }
@@ -123,7 +122,7 @@ fun MainScreen(
             }
         }
         Row(
-            Modifier
+            modifier = modifier
                 .padding(top = 12.dp)
                 .wrapContentHeight()
                 .fillMaxWidth()
@@ -134,7 +133,7 @@ fun MainScreen(
                 val color =
                     if (pagerState.currentPage == iteration) Color.Red else Color.LightGray
                 Box(
-                    modifier = Modifier
+                    modifier = modifier
                         .clickable {
                             coroutineScope.launch {
                                 pagerState.animateScrollToPage(iteration)
