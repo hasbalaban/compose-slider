@@ -6,10 +6,10 @@ import com.google.gson.Gson
 
 sealed class Screen(val route: String) {
     data object Slider : Screen("sliderScreen")
-    data class SliderItemDetail(private val rt: String ="sliderItemDetail?item="): Screen(route = "sliderItemDetail?item={item}"){
+    data class SliderItemDetail(private val baseRoute: String ="sliderItemDetail?item="): Screen(route = "sliderItemDetail?item={item}"){
         fun createRoute(item: SliderItem): String {
             val data = Gson().toJson(item)
-            return rt + data
+            return baseRoute + data
         }
     }
 }
