@@ -31,6 +31,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.balaban.slider.LocalAnimatedContentScope
+import com.balaban.slider.LocalSharedTransitionScope
 import com.balaban.slider.R
 import com.balaban.slider.model.SliderItem
 import kotlin.random.Random
@@ -39,11 +41,12 @@ import kotlin.random.Random
 @Composable
 fun ImageDetail(
     sliderItem: SliderItem,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
     onBackClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+    val animatedContentScope = LocalAnimatedContentScope.current
+
     val text by remember {
         mutableStateOf(("Günbatımında Huzurun Rengi\n" +
                 "\n" +

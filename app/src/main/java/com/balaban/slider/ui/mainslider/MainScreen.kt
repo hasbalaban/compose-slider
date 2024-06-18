@@ -32,6 +32,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import com.balaban.slider.LocalAnimatedContentScope
+import com.balaban.slider.LocalSharedTransitionScope
 import com.balaban.slider.lerpAlpha
 import com.balaban.slider.lerpSize
 import com.balaban.slider.model.SliderItem
@@ -41,12 +43,13 @@ import kotlin.math.absoluteValue
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainScreen(
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
     onClickedSliderDetail: (sliderItem: SliderItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
+
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+    val animatedContentScope = LocalAnimatedContentScope.current
 
     val sliderList by remember {
         mutableStateOf(

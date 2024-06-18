@@ -41,6 +41,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,6 +74,13 @@ import kotlin.math.absoluteValue
 import kotlin.random.Random
 import kotlin.random.nextUInt
 
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+val LocalSharedTransitionScope =
+    compositionLocalOf<SharedTransitionScope> { error("No SharedTransitionScope found") }
+val LocalAnimatedContentScope =
+    compositionLocalOf<AnimatedContentScope> { error("No AnimatedContentScope found") }
+
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,13 +110,16 @@ private fun MainNavigation() {
         NavHost(navController = navController, startDestination = Screen.Slider.route) {
 
             composable(Screen.Slider.route) {
-                MainScreen(
-                    this@SharedTransitionLayout,
-                    this@composable,
-                    onClickedSliderDetail = {
-                        navController.navigate(Screen.SliderItemDetail().createRoute(item = it))
-                    }
-                )
+                CompositionLocalProvider(
+                    LocalSharedTransitionScope provides this@SharedTransitionLayout,
+                    LocalAnimatedContentScope provides this
+                ) {
+                    MainScreen(
+                        onClickedSliderDetail = {
+                            navController.navigate(Screen.SliderItemDetail().createRoute(item = it))
+                        }
+                    )
+                }
             }
 
             composable(
@@ -122,14 +134,20 @@ private fun MainNavigation() {
                 val itemData = Gson().fromJson(itemDataString, SliderItem::class.java)
 
                 itemData?.let {
-                    ImageDetail(
-                        sliderItem = it,
-                        this@SharedTransitionLayout,
-                        this@composable,
-                        onBackClicked = {
-                            navController.popBackStack()
-                        }
-                    )
+
+                    CompositionLocalProvider(
+                        LocalSharedTransitionScope provides this@SharedTransitionLayout,
+                        LocalAnimatedContentScope provides this
+                    ) {
+                        ImageDetail(
+                            sliderItem = it,
+                            onBackClicked = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+
+
                 }
             }
         }
