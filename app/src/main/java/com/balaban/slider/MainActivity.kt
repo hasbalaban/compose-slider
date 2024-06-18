@@ -3,6 +3,7 @@ package com.balaban.slider
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,8 +38,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -228,13 +232,19 @@ private fun ImageDetail(
     sliderItem: SliderItem,
     onBackClicked : () -> Unit,
     modifier: Modifier = Modifier){
-    Column(modifier = Modifier.fillMaxSize()) {
-        Column(
+    Column(modifier = Modifier
+        .wrapContentSize()
+        .padding(start = 12.dp, end = 12.dp, top = 12.dp)) {
+        Image(
             modifier = modifier
                 .clickable {
                     onBackClicked.invoke()
-                }
-                .fillMaxSize(),
+                },
+            painter = painterResource(id = R.drawable.go_back), contentDescription = "go back"
+        )
+
+        Column(
+            modifier = Modifier.padding(top = 36.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -242,6 +252,11 @@ private fun ImageDetail(
                 model = sliderItem.imageUrl,
                 contentDescription = "Translated description of what the image contains",
                 contentScale = ContentScale.FillBounds
+            )
+
+            Text(
+                modifier = Modifier.padding(top = 24.dp),
+                text = "Photo", fontSize = 24.sp
             )
         }
     }
