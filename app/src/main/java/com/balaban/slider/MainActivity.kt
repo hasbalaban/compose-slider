@@ -25,30 +25,30 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import coil.compose.AsyncImage
+import com.balaban.slider.model.SliderItem
 import com.balaban.slider.ui.theme.SliderTheme
-import kotlinx.coroutines.delay
+import com.google.gson.Gson
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
-import kotlin.math.sign
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Column(modifier = Modifier.fillMaxSize()) {
-                      MainScreen()
+                        MainNavigation()
                     }
                 }
             }
@@ -70,7 +70,48 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+private fun MainNavigation(){
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = Screen.Slider.route){
+
+        composable(Screen.Slider.route){
+            MainScreen(
+                onClickedSliderDetail = {
+                    navController.navigate(Screen.SliderItemDetail().createRoute(item = it))
+                }
+            )
+        }
+
+        composable(
+            Screen.SliderItemDetail().route,
+            arguments = listOf(
+                navArgument("item") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                })
+        ) {backStackEntry ->
+            val itemDataString = backStackEntry.arguments?.getString("item")
+            val itemData = Gson().fromJson(itemDataString, SliderItem::class.java)
+
+            itemData?.let {
+                ImageDetail(
+                    sliderItem = it,
+                    onBackClicked = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MainScreen(
+    onClickedSliderDetail : (SliderItem) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val coroutineScope = rememberCoroutineScope()
 
     val sliderList by remember {
         mutableStateOf(
@@ -110,6 +151,9 @@ fun MainScreen(modifier: Modifier = Modifier) {
 
             Card(
                 Modifier
+                    .clickable {
+                        onClickedSliderDetail.invoke(sliderList[pageIndex])
+                    }
                     .padding(top = 48.dp, start = 6.dp, end = 6.dp)
                     .graphicsLayer {
                         val pageOffset = (
@@ -148,7 +192,9 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 Box(
                     modifier = Modifier
                         .clickable {
-                           // pagerState.animateScrollToPage(iteration)
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(iteration)
+                            }
                         }
                         .padding(2.dp)
                         .clip(CircleShape)
@@ -177,18 +223,40 @@ fun SliderItem(sliderItem : SliderItem, modifier: Modifier = Modifier) {
         }
 }
 
+@Composable
+private fun ImageDetail(
+    sliderItem: SliderItem,
+    onBackClicked : () -> Unit,
+    modifier: Modifier = Modifier){
+    Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = modifier
+                .clickable {
+                    onBackClicked.invoke()
+                }
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AsyncImage(
+                model = sliderItem.imageUrl,
+                contentDescription = "Translated description of what the image contains",
+                contentScale = ContentScale.FillBounds
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     SliderTheme {
-        MainScreen()
+        MainScreen(
+            onClickedSliderDetail = {}
+        )
     }
 }
 
-data class SliderItem(
-    val imageUrl: String,
-    val imageName: String = ""
-)
 
 
 fun lerpAlpha(start: Float, stop: Float, fraction: Float): Float {
