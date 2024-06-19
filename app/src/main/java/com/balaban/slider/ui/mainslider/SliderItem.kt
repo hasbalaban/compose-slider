@@ -107,10 +107,7 @@ fun SliderItem(
                         lineHeight = 12.sp
                     )
                 }
-
             }
-
         }
     }
-
 }
