@@ -46,9 +46,6 @@ fun MainScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    val sharedTransitionScope = LocalSharedTransitionScope.current
-    val animatedContentScope = LocalAnimatedContentScope.current
-
     val sliderList by remember {
         mutableStateOf(
             listOf(
@@ -90,18 +87,13 @@ fun MainScreen(
                     }
                     .padding(top = 48.dp, start = 6.dp, end = 6.dp)
                     .graphicsLayer {
-                        val pageOffset = (
-                                (pagerState.currentPage - pageIndex) + pagerState
-                                    .currentPageOffsetFraction
-                                ).absoluteValue
+                        val pageOffset = ((pagerState.currentPage - pageIndex) + pagerState.currentPageOffsetFraction).absoluteValue
 
-                        // We animate the alpha, between 50% and 100%
                         alpha = lerpAlpha(
                             start = 0.5f,
                             stop = 1f,
                             fraction = 1f - pageOffset.coerceIn(0f, 1f)
                         )
-
 
                         scaleY = lerpSize(
                             start = 0.80f,
@@ -112,11 +104,7 @@ fun MainScreen(
                     }
             ) {
 
-                SliderItem(
-                    sliderItem = sliderList[pageIndex],
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedContentScope = animatedContentScope
-                )
+                SliderItem(sliderItem = sliderList[pageIndex])
             }
         }
         Row(

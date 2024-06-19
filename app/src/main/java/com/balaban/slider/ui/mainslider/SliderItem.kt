@@ -1,8 +1,6 @@
 package com.balaban.slider.ui.mainslider
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,16 +23,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.balaban.slider.LocalAnimatedContentScope
+import com.balaban.slider.LocalSharedTransitionScope
 import com.balaban.slider.model.SliderItem
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SliderItem(
     sliderItem: SliderItem,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier
 ) {
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+    val animatedContentScope = LocalAnimatedContentScope.current
 
     val text by remember {
         mutableStateOf(("Günbatımında Huzurun Rengi\n" +
