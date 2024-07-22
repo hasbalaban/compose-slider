@@ -38,7 +38,6 @@ import com.balaban.slider.model.SliderItem
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainScreen(
     onClickedSliderDetail: (sliderItem: SliderItem) -> Unit,
